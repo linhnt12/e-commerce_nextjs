@@ -1,15 +1,15 @@
 import dbConnect from "@/lib/mongodb";
-import Product from "@/models/Product";
+import ProductCategory from "@/models/ProductCategory";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
 	await dbConnect();
 
 	try {
-		const products = await Product.find({}).sort({
+		const productCategories = await ProductCategory.find({}).sort({
 			createdAt: "desc"
 		});
-		return NextResponse.json(products);
+		return NextResponse.json(productCategories);
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
 
 	try {
 		const body = await request.json();
-		const product = await Product.create(body);
-		return NextResponse.json(product);
+		const productCategory = await ProductCategory.create(body);
+		return NextResponse.json(productCategory);
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -32,8 +32,8 @@ export async function PUT(request: NextRequest) {
 
 	try {
 		const body = await request.json();
-		const product = await Product.findByIdAndUpdate(body._id, body, { new: true });
-		return NextResponse.json(product);
+		const productCategory = await ProductCategory.findByIdAndUpdate(body._id, body, { new: true });
+		return NextResponse.json(productCategory);
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -44,8 +44,8 @@ export async function DELETE(request: NextRequest) {
 
 	try {
 		const body = await request.json();
-		const product = await Product.findByIdAndDelete(body._id);
-		return NextResponse.json(product);
+		const productCategory = await ProductCategory.findByIdAndDelete(body._id);
+		return NextResponse.json(productCategory);
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}

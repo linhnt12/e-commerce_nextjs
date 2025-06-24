@@ -4,19 +4,15 @@ import slug from "mongoose-slug-updater";
 
 mongoose.plugin(slug);
 
-const productSchema = new mongoose.Schema({
+const productCategorySchema = new mongoose.Schema({
 	title: String,
-	product_category_id: {
+	parent_id: {
 		type: String,
 		default: ""
 	},
 	description: String,
-	price: Number,
-	discountPercentage: Number,
-	stock: Number,
 	thumbnail: String,
 	status: String,
-	feature: String,
 	slug: {
 		type: String,
 		slug: "title",
@@ -45,6 +41,6 @@ const productSchema = new mongoose.Schema({
 	timestamps: true
 });
 
-const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
+const ProductCategory = mongoose.models.ProductCategory || mongoose.model("ProductCategory", productCategorySchema);
 
-export default Product;
+export default ProductCategory;

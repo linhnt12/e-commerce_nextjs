@@ -15,8 +15,16 @@ const breadcrumbItems = [
     title: 'Products',
   },
   {
+    path: '/admin/products/create',
+    title: 'Add Product',
+  },
+  {
     path: '/admin/product-categories',
     title: 'Product Categories',
+  },
+  {
+    path: '/admin/product-categories/create',
+    title: 'Add Product Category',
   },
   {
     path: '/admin/orders',

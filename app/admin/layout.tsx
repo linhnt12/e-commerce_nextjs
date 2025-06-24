@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider width={220} trigger={null} collapsible collapsed={collapsed}>
         <Sidenav />
       </Sider>
       <Layout>
@@ -41,9 +41,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               height: 64,
             }}
           />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full px-4">
             <span>E-commerce Nextjs</span>
-            <div className="flex items-center gap-6 px-4">
+            <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Avatar src="https://joeschmoe.io/api/v1/random" />
                 <span>John Doe</span>

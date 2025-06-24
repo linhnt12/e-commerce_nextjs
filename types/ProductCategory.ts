@@ -1,14 +1,10 @@
-export interface Product {
+export interface ProductCategory {
 	_id: string;
 	title: string;
-	product_category_id: string;
+	parent_id?: string;
 	description?: string;
-	price?: number;
-	discountPercentage?: number;
-	stock?: number;
 	thumbnail?: string;
 	status?: string;
-	feature?: string;
 	slug?: string;
 	createdBy?: {
 		account_id: string;
