@@ -1,7 +1,9 @@
 'use client';
+
 import { getProductCategoriesOptions } from '@/helpers/admin/product-categories/getProductCategoriesOptions';
+import { Product } from '@/types/Product';
 import { Button, Form, FormProps, Input, InputNumber, message, Modal, Radio, Select } from 'antd';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type FieldType = {
@@ -16,31 +18,35 @@ type FieldType = {
   feature?: string;
 };
 
-export default function CreateProduct() {
-  const router = useRouter();
-  const [modal, modalContextHolder] = Modal.useModal();
+export default function EditProduct() {
+  const { slug } = useParams();
+  const [form] = Form.useForm();
   const [productCategoriesOptions, setProductCategoriesOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [messageApi, messageContextHolder] = message.useMessage();
+  const router = useRouter();
+  const [modal, modalContextHolder] = Modal.useModal();
   useEffect(() => {
-    getProductCategoriesOptions().then((options) => {
+    getProductCategoriesOptions([slug as string]).then((options) => {
       setProductCategoriesOptions(options);
     });
-  }, []);
+    refetch();
+  }, [slug]);
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     modal.confirm({
-      title: 'Create Product',
-      content: 'Are you sure you want to create this product?',
+      title: 'Update Product',
+      content: 'Are you sure you want to update this product?',
       onOk: async () => {
-        const response = await fetch('/api/products', {
-          method: 'POST',
+        const response = await fetch(`/api/products/${slug}`, {
+          method: 'PUT',
           body: JSON.stringify(values),
         });
-        await response.json();
-
-        messageApi.success('Product created successfully');
+        const data = await response.json();
+        setProduct(data);
+        messageApi.success('Product updated successfully');
         setTimeout(() => {
           router.push(`/admin/products`);
         }, 1000);
@@ -52,13 +58,27 @@ export default function CreateProduct() {
     console.log('Failed:', errorInfo);
   };
 
+  const refetch = () => {
+    fetch(`/api/products/${slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        form.setFieldsValue(data);
+        setProduct(data);
+      });
+  };
+
   return (
     <div>
       {messageContextHolder}
       {modalContextHolder}
-
-      <h1 className="mb-6">Add Product</h1>
-      <Form name="basic" onFinish={onFinish} layout="vertical" onFinishFailed={onFinishFailed}>
+      <h1 className="mb-6">{product?.title}</h1>
+      <Form
+        form={form}
+        name="basic"
+        onFinish={onFinish}
+        layout="vertical"
+        onFinishFailed={onFinishFailed}
+      >
         <Form.Item<FieldType>
           label="Title"
           name="title"
@@ -142,7 +162,7 @@ export default function CreateProduct() {
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Add Product
+            Update Product
           </Button>
         </Form.Item>
       </Form>

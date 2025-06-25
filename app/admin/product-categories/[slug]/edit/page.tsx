@@ -1,8 +1,9 @@
 'use client';
+
 import { getProductCategoriesOptions } from '@/helpers/admin/product-categories/getProductCategoriesOptions';
-import type { FormProps } from 'antd';
-import { Button, Form, Input, message, Radio, Select } from 'antd';
-import { useRouter } from 'next/navigation';
+import { ProductCategory } from '@/types/ProductCategory';
+import { Button, Form, FormProps, Input, Modal, Radio, Select, message } from 'antd';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type FieldType = {
@@ -13,38 +14,66 @@ type FieldType = {
   parent_id?: string;
 };
 
-export default function CreateProductCategory() {
-  const router = useRouter();
-
+export default function ProductCategoryDetail() {
+  const { slug } = useParams();
+  const [form] = Form.useForm();
+  const [modal, modalContextHolder] = Modal.useModal();
   const [productCategoriesOptions, setProductCategoriesOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [productCategory, setProductCategory] = useState<ProductCategory | null>(null);
 
   useEffect(() => {
-    getProductCategoriesOptions().then((options) => {
+    getProductCategoriesOptions([slug as string]).then((options) => {
       setProductCategoriesOptions([{ label: 'None', value: '' }, ...options]);
     });
-  }, []);
+    refetch();
+  }, [slug]);
+
+  const router = useRouter();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    const response = await fetch('/api/product-categories', {
-      method: 'POST',
-      body: JSON.stringify(values),
-    });
-    await response.json();
+    modal.confirm({
+      title: 'Update Product Category',
+      content: 'Are you sure you want to update this product category?',
+      onOk: async () => {
+        const response = await fetch(`/api/product-categories/${slug}`, {
+          method: 'PUT',
+          body: JSON.stringify(values),
+        });
+        await response.json();
 
-    router.push(`/admin/product-categories`);
-    message.success('Product category created successfully');
+        router.push(`/admin/product-categories`);
+        message.success('Product category updated successfully');
+      },
+    });
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const refetch = () => {
+    fetch(`/api/product-categories/${slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        form.setFieldsValue(data);
+        setProductCategory(data);
+      });
+  };
+
   return (
     <div>
-      <h1 className="mb-6">Add Product Category</h1>
-      <Form name="basic" onFinish={onFinish} layout="vertical" onFinishFailed={onFinishFailed}>
+      {modalContextHolder}
+      <h1 className="mb-6">{productCategory?.title}</h1>
+
+      <Form
+        form={form}
+        name="basic"
+        onFinish={onFinish}
+        layout="vertical"
+        onFinishFailed={onFinishFailed}
+      >
         <Form.Item<FieldType>
           label="Title"
           name="title"
@@ -87,7 +116,7 @@ export default function CreateProductCategory() {
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Add Category
+            Update Category
           </Button>
         </Form.Item>
       </Form>

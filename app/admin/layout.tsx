@@ -45,7 +45,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span>E-commerce Nextjs</span>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <Avatar src="https://joeschmoe.io/api/v1/random" />
+                <Avatar
+                  src="https://www.sichuantravelguide.com/assets/images/pandas/panda-feiyun-01.jpg"
+                  size={38}
+                />
                 <span>John Doe</span>
               </div>
               <Button type="primary" danger>
